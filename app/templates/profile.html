@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil</title>
+</head>
+<body>
+    <h1>Perfil de Usuario</h1>
+    <img src="{{ profile.picture }}" alt="Foto de perfil">
+    <p>Nombre: {{ profile.name }}</p>
+    <p>Email: {{ profile.email }}</p>
+    <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+</body>
+</html>

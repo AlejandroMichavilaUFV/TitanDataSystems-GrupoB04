@@ -4,12 +4,15 @@ Cache/
 Logs/
 Output/
 Screenshots/
+venv/
+.env
+__pycache__/
+*.json
 *.HotReload.*
 
 # Ignore Visual Studio project files (generated locally)
 *.csproj
 *.sln
-
 # Ignore thumbnails created by Windows
 Thumbs.db
 
