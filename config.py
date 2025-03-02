@@ -14,3 +14,5 @@ class Config:
         'https://www.googleapis.com/auth/userinfo.email',
         'openid'
     ]
+     
+    GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
