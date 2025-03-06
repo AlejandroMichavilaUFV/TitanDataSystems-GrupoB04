@@ -2,6 +2,7 @@ from flask import render_template, redirect, url_for, session, request
 from google.oauth2.credentials import Credentials
 from app import app
 from app.auth import get_authorization_url, exchange_code_for_token, get_user_profile
+from app.models.usuarios import registrar_usuario_google
 
 @app.route('/')
 def index():
@@ -23,12 +24,16 @@ def callback():
 
 @app.route('/profile')
 def profile():
-    """Muestra el perfil del usuario autenticado."""
+    """Muestra el perfil del usuario autenticado y lo registra/actualiza."""
     if 'credentials' not in session:
         return redirect(url_for('index'))
 
     creds = Credentials(**session['credentials'])
     profile = get_user_profile(creds)
+    
+    # Registrar o actualizar el usuario en usuarios.json
+    registrar_usuario_google(profile)
+    
     return render_template('profile.html', profile=profile)
 
 @app.route('/logout')

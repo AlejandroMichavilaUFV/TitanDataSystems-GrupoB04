@@ -2,15 +2,17 @@ import json
 import os
 import uuid
 
-DATA_FILE = 'usuarios.json'
+DATA_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'usuarios.json')
+
 
 class Usuario:
-    def __init__(self, id, nombre, usuario, descripcion, imagen):
+    def __init__(self, id, nombre, usuario, descripcion, imagen, email):
         self.id = id
         self.nombre = nombre
         self.usuario = usuario
         self.descripcion = descripcion
         self.imagen = imagen
+        self.email = email
 
     def to_dict(self):
         return {
@@ -18,65 +20,44 @@ class Usuario:
             "nombre": self.nombre,
             "usuario": self.usuario,
             "descripcion": self.descripcion,
-            "imagen": self.imagen
+            "imagen": self.imagen,
+            "email": self.email
         }
 
 def cargar_datos():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r') as file:
-            try:
-                return [Usuario(**usuario) for usuario in json.load(file)]
-            except json.JSONDecodeError:
-                return []
-    return []
+    if not os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'w') as file:
+            json.dump([], file, indent=4)  # Crea el archivo vacío si no existe
+    with open(DATA_FILE, 'r') as file:
+        try:
+            return [Usuario(**usuario) for usuario in json.load(file)]
+        except json.JSONDecodeError:
+            return []
 
 def guardar_datos(usuarios):
     with open(DATA_FILE, 'w') as file:
         json.dump([usuario.to_dict() for usuario in usuarios], file, indent=4)
 
-def crear_usuario():
+def registrar_usuario_google(profile):
     usuarios = cargar_datos()
-    id = str(uuid.uuid4())  # Generar un ID único aleatorio
-    nombre = input("Ingrese el nombre del usuario: ")
-    usuario = input("Ingrese el nombre de usuario: ")
-    descripcion = input("Ingrese la descripción del usuario: ")
-    imagen = input("Ingrese el nombre del archivo de imagen: ")
-    usuario_obj = Usuario(id, nombre, usuario, descripcion, imagen)
-    usuarios.append(usuario_obj)
+    email = profile.get('email')
+    
+    usuario_existente = next((u for u in usuarios if u.email == email), None)
+
+    if usuario_existente:
+        usuario_existente.nombre = profile.get('name')
+        usuario_existente.usuario = profile.get('given_name')
+        usuario_existente.descripcion = "Usuario registrado con Google"
+        usuario_existente.imagen = profile.get('picture')
+    else:
+        nuevo_usuario = Usuario(
+            id=str(uuid.uuid4()),
+            nombre=profile.get('name'),
+            usuario=profile.get('given_name'),
+            descripcion="Usuario registrado con Google",
+            imagen=profile.get('picture'),
+            email=email
+        )
+        usuarios.append(nuevo_usuario)
+
     guardar_datos(usuarios)
-    print("Usuario creado exitosamente.")
-
-def leer_usuarios():
-    usuarios = cargar_datos()
-    if usuarios:
-        for i, usuario in enumerate(usuarios, start=1):
-            print(f"{i}. ID: {usuario.id}, Nombre: {usuario.nombre}, Usuario: {usuario.usuario}, Descripción: {usuario.descripcion}, Imagen: {usuario.imagen}")
-    else:
-        print("No hay usuarios registrados.")
-
-def actualizar_usuario():
-    usuarios = cargar_datos()
-    leer_usuarios()
-    indice = int(input("Ingrese el número del usuario a actualizar: ")) - 1
-    if 0 <= indice < len(usuarios):
-        id = usuarios[indice].id  # Mantener el mismo ID
-        nombre = input("Ingrese el nuevo nombre del usuario: ")
-        usuario = input("Ingrese el nuevo nombre de usuario: ")
-        descripcion = input("Ingrese la nueva descripción del usuario: ")
-        imagen = input("Ingrese el nuevo nombre del archivo de imagen: ")
-        usuarios[indice] = Usuario(id, nombre, usuario, descripcion, imagen)
-        guardar_datos(usuarios)
-        print("Usuario actualizado exitosamente.")
-    else:
-        print("Índice inválido.")
-
-def borrar_usuario():
-    usuarios = cargar_datos()
-    leer_usuarios()
-    indice = int(input("Ingrese el número del usuario a borrar: ")) - 1
-    if 0 <= indice < len(usuarios):
-        usuarios.pop(indice)
-        guardar_datos(usuarios)
-        print("Usuario borrado exitosamente.")
-    else:
-        print("Índice inválido.")
