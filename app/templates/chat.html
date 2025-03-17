@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat - Titán Data Systems</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Barra lateral -->
+        <div class="sidebar">
+            <div class="brand">
+                <img src="{{ url_for('static', filename='media/logo.png') }}" alt="Logo" class="logo">
+            </div>
+            <nav class="nav-menu">
+                <a href="{{ url_for('profile') }}" class="nav-item">
+                    <i class="fas fa-inbox"></i> Correos
+                </a>
+                <a href="{{ url_for('chat') }}" class="nav-item active">
+                    <i class="fas fa-comments"></i> Chat
+                </a>
+            </nav>
+            <div class="user-profile">
+                <div class="user-info">
+                    <span class="user-name">{{ profile.display_name }}</span>
+                    <a href="{{ url_for('logout') }}" class="logout-btn">Cerrar sesión</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Los mensajes se añadirán aquí dinámicamente -->
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="Escribe tu mensaje...">
+                    <button id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const chatMessages = document.getElementById('chat-messages');
+
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            
+            if (isUser) {
+                messageDiv.textContent = message;
+            } else {
+                messageDiv.innerHTML = marked.parse(message);
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, true);
+            messageInput.value = '';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+
+                const data = await response.json();
+                addMessage(data.response);
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Lo siento, ha ocurrido un error.');
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        marked.setOptions({
+            breaks: true,
+            gfm: true
+        });
+    </script>
+</body>
+</html>

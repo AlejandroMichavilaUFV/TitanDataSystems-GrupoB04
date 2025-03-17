@@ -1,0 +1,68 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    filter: brightness(50%);
+}
+
+.content {
+    z-index: 1;
+    text-align: center;
+}
+
+.logo {
+    width: 150px;
+    margin-bottom: 20px;
+    animation: fadeIn 2s ease-in-out;
+}
+
+.slogan {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    color: #e0e0e0;
+    margin-bottom: 40px;
+    animation: fadeIn 3s ease-in-out;
+}
+
+.cta-btn {
+    background-color: #0d47a1;
+    color: #ffffff;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 4s ease-in-out;
+}
+
+.cta-btn:hover {
+    background-color: #1565c0;
+    transform: scale(1.05);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

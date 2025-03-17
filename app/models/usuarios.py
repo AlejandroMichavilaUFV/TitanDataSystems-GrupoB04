@@ -45,19 +45,21 @@ def registrar_usuario_google(profile):
     usuario_existente = next((u for u in usuarios if u.email == email), None)
 
     if usuario_existente:
-        usuario_existente.nombre = profile.get('name')
-        usuario_existente.usuario = profile.get('given_name')
-        usuario_existente.descripcion = "Usuario registrado con Google"
-        usuario_existente.imagen = profile.get('picture')
+        usuario_existente.nombre = profile['name']
+        usuario_existente.usuario = profile['email']
+        usuario_existente.imagen = profile['picture']
     else:
         nuevo_usuario = Usuario(
             id=str(uuid.uuid4()),
-            nombre=profile.get('name'),
-            usuario=profile.get('given_name'),
+            nombre=profile['name'],
+            usuario=profile['email'],
             descripcion="Usuario registrado con Google",
-            imagen=profile.get('picture'),
+            imagen=profile['picture'],
             email=email
         )
         usuarios.append(nuevo_usuario)
 
     guardar_datos(usuarios)
+
+    # Agregar registro de depuración
+    print(f"Usuario registrado/actualizado: {profile['email']}")
