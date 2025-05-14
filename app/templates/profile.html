@@ -2,47 +2,49 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil - Titán Data Systems</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bandeja de Entrada - Titán Data Systems</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="app-container">
+        
         <!-- Barra lateral -->
-        <div class="sidebar">
+        <aside class="sidebar">
             <div class="brand">
                 <img src="{{ url_for('static', filename='media/logo.png') }}" alt="Logo" class="logo">
             </div>
             <nav class="nav-menu">
                 <a href="{{ url_for('profile') }}" class="nav-item active">
-                    <i class="fas fa-inbox"></i> Correos
+                    <i class="fas fa-inbox"></i> Bandeja de Entrada
                 </a>
                 <a href="{{ url_for('chat') }}" class="nav-item">
-                    <i class="fas fa-comments"></i> Chat
+                    <i class="fas fa-comments"></i> Chat IA
                 </a>
             </nav>
             <div class="user-profile">
-                <img src="{{ profile.picture }}" alt="Perfil" class="profile-pic">
+                <img src="{{ profile.photos[0].url }}" alt="Perfil" class="profile-pic">
                 <div class="user-info">
-                    <span class="user-name">{{ profile.name }}</span>
+                    <span class="user-name">{{ profile.names[0].displayName }}</span>
                     <a href="{{ url_for('logout') }}" class="logout-btn">Cerrar sesión</a>
                 </div>
             </div>
-        </div>
+        </aside>
 
         <!-- Contenido principal -->
-        <div class="main-content">
-            <div class="toolbar">
+        <main class="main-content">
+            <header class="toolbar">
                 <div class="search-bar">
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Buscar en correos">
                 </div>
-            </div>
+            </header>
 
-            <div class="email-list">
+            <section class="email-list">
                 {% for email in emails %}
-                <div class="email-item" onclick="openEmailModal('{{ email.id }}')">
+                <article class="email-item {% if not email.is_read %}unread{% endif %}" onclick="openEmailModal('{{ email.id }}')">
                     <div class="email-header">
                         <div class="sender-info">
                             <div class="sender-details">
@@ -52,7 +54,8 @@
                         </div>
                         <div class="email-meta">
                             <div class="date-container">
-                                <div class="email-date">{{ email.date }}</div>
+                                <span class="email-date">{{ email.date if email.date else '' }}</span>
+                                <span class="email-when">{{ email.when if email.when else '' }}</span>
                             </div>
                             {% if email.attachments %}
                             <div class="attachment-tag">
@@ -61,10 +64,15 @@
                             {% endif %}
                         </div>
                     </div>
-                </div>
+                    {% if email.is_thread %}
+                    <div class="thread-indicator">
+                        <i class="fas fa-comments"></i> Conversación
+                    </div>
+                    {% endif %}
+                </article>
                 {% endfor %}
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
 
     <!-- Modal para ver el correo completo -->
@@ -72,22 +80,23 @@
         <div class="modal-content">
             <span class="close-button" onclick="closeEmailModal()">&times;</span>
             <div class="email-full-view">
-                <div class="email-header">
+                <header class="email-header">
                     <h2 id="modal-subject"></h2>
                     <div class="email-details">
-                        <div class="sender-info">De: <span id="modal-sender"></span></div>
-                        <div class="receiver-info">Para: <span id="modal-receiver"></span></div>
-                        <div class="date-info">
-                            <span id="modal-date"></span>
-                        </div>
+                        <p><strong>De:</strong> <span id="modal-sender"></span></p>
+                        <p><strong>Para:</strong> <span id="modal-receiver"></span></p>
+                        <p class="date-info">
+                            <span id="modal-date"></span> <span id="modal-when"></span>
+                        </p>
                     </div>
-                </div>
+                </header>
                 <div class="email-body" id="modal-body"></div>
                 <div class="attachments" id="modal-attachments"></div>
             </div>
         </div>
     </div>
 
+    <!-- Script -->
     <script>
         async function openEmailModal(emailId) {
             try {
@@ -98,11 +107,12 @@
                 document.getElementById('modal-sender').textContent = email.sender;
                 document.getElementById('modal-receiver').textContent = email.receiver;
                 document.getElementById('modal-date').textContent = email.date;
+                document.getElementById('modal-when').textContent = email.when;
                 document.getElementById('modal-body').innerHTML = email.body.replace(/\n/g, '<br>');
-                
+
                 const attachmentsContainer = document.getElementById('modal-attachments');
                 attachmentsContainer.innerHTML = '';
-                
+
                 if (email.attachments && email.attachments.length > 0) {
                     email.attachments.forEach(attachment => {
                         const attachmentDiv = document.createElement('div');
@@ -118,7 +128,7 @@
                         attachmentsContainer.appendChild(attachmentDiv);
                     });
                 }
-                
+
                 document.getElementById('email-modal').style.display = 'flex';
             } catch (error) {
                 console.error('Error:', error);
@@ -150,7 +160,7 @@
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = attachmentId.split(':')[2]; // Obtener el nombre del archivo del ID
+                a.download = attachmentId.split(':')[2];
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -162,4 +172,3 @@
     </script>
 </body>
 </html>
-

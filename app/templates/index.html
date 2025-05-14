@@ -1,26 +1,211 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio - Titán Data Systems</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 </head>
+
 <body>
-    <div class="hero">
-        <video autoplay muted loop class="background-video">
-            <source src="{{ url_for('static', filename='media/fondoFinal.mp4') }}" type="video/mp4">
-            Tu navegador no soporta el video.
-        </video>
-        <div class="content">
-            <img src="{{ url_for('static', filename='media/logo.png') }}" alt="Logo de Titán Data Systems" class="logo">
-            <h1 class="slogan">Conquista el futuro de tus decisiones empresariales con la inteligencia de tus datos.</h1>
-            <a href="{{ url_for('login') }}" class="cta-btn">
-                <i class="fab fa-google"></i> Iniciar sesión con Google
-            </a>
-        </div>
+    <canvas id="bgCanvas"></canvas>
+    <!-- Pantalla de carga -->
+    <div id="loading-screen">
+        <p>Haz click para empezar</p>
     </div>
+
+    <!-- Contenido de la página -->
+    <div class="content">
+        <nav class="navbar">
+            <div class="menu-toggle" id="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-list">
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#caracter">Información</a></li>
+                <li><a href="#">Planes</a></li>
+                <li><a href="#">Equipo</a></li>
+            </ul>
+        </nav>
+
+        <div class="main-container">
+            <!-- Sección de texto -->
+            <div class="text-section">
+                <h1>Conquista el futuro de tus decisiones empresariales con la inteligencia de tus datos.</h1>
+                <p>Con Titan Data Systems, toma el control total de tus datos y transforma información en decisiones
+                    estratégicas. Deja de depender de terceros para entender lo que sucede afuera y empieza a conocer
+                    cada detalle de tu empresa desde adentro. Descubre el poder de tus datos, optimiza tu negocio y
+                    lleva tu crecimiento al siguiente nivel.</p>
+                <a href="{{ url_for('login') }}" class="login-button">
+                    <i class="fab fa-google"></i> Iniciar sesión con Google
+                </a>
+            </div>
+            <!-- Modelo 3D -->
+            <div class="model-section">
+                <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.72/build/spline-viewer.js"></script>
+                <spline-viewer url="https://prod.spline.design/xSpeXkNmwkzo7VWh/scene.splinecode"></spline-viewer>
+            </div>
+        </div>
+        <!-- Sección de Características de la Plataforma -->
+        <section class="platform-section" id="caracter">
+            <h2>Potencia tu negocio con la inteligencia de tus datos</h2>
+            <p class="sub-text">Nuestra plataforma transforma los correos de tu empresa en información clave para la
+                toma de decisiones.</p>
+
+            <div class="feature-container">
+                <!-- Seguridad y Protección -->
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Seguridad y Protección</h3>
+                    <p>Tus datos están protegidos por Google con cifrado de extremo a extremo y un kill switch para
+                        desconexión instantánea.</p>
+                </div>
+
+                <!-- Monitoreo en Tiempo Real -->
+                <div class="feature-card">
+                    <i class="fas fa-eye"></i>
+                    <h3>Monitoreo en Tiempo Real</h3>
+                    <p>Analiza la actividad de tu empresa en tiempo real a través del correo electrónico.</p>
+                </div>
+
+                <!-- Detección de Fraudes -->
+                <div class="feature-card">
+                    <i class="fas fa-user-secret"></i>
+                    <h3>Detección de Fraudes</h3>
+                    <p>Detecta correos fraudulentos y protege tu negocio de las estafas más sofisticadas.</p>
+                </div>
+
+
+
+                <!-- Búsqueda Avanzada -->
+                <div class="feature-card">
+                    <i class="fas fa-search"></i>
+                    <h3>Búsqueda Avanzada</h3>
+                    <p>Encuentra correos rápidamente con búsqueda por contexto o interactuando con la IA integrada.</p>
+                </div>
+
+                <!-- IA Avanzada -->
+                <div class="feature-card special-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>IA con Gran Contexto</h3>
+                    <p>Consulta a nuestra IA para obtener respuestas instantáneas, analizar correos y mejorar tu
+                        comunicación.</p>
+                    <div class="chat-preview">
+                        <p><strong>Usuario:</strong> ¿Hubo alguna queja hoy?</p>
+                        <p><strong>IA:</strong> Sí, un cliente reportó un problema con la entrega del producto.</p>
+                    </div>
+                </div>
+                <!-- Gestión de Organizaciones -->
+                <div class="feature-card">
+                    <i class="fas fa-users-cog"></i>
+                    <h3>Gestión de Organizaciones</h3>
+                    <p>Administra roles y permisos dentro de tu empresa para mantener el control total.</p>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+
+
+    <script>
+        // Pantalla de carga
+        document.getElementById('loading-screen').addEventListener('click', function () {
+            this.classList.add('hidden');
+            document.querySelector('.content').classList.add('visible');
+        });
+
+    </script>
+    <script>
+        // Fondo animado con partículas
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let w, h;
+
+        function resizeCanvas() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Lista de colores azules en formato RGBA
+        const colors = [
+            'rgba(0, 102, 204, 0.5)',   // Azul oscuro
+            'rgba(0, 153, 255, 0.5)',   // Azul medio
+            'rgba(51, 204, 255, 0.5)',  // Azul claro
+            'rgba(102, 178, 255, 0.5)', // Azul pastel
+            'rgba(0, 128, 255, 0.5)',   // Azul brillante
+        ];
+
+        const particles = [];
+        const numParticles = 1000;
+
+        for (let i = 0; i < numParticles; i++) {
+            particles.push({
+                x: Math.random() * w, // Posición X aleatoria
+                y: Math.random() * h, // Posición Y aleatoria
+                vx: (Math.random() - 0.5) * 0.5, // Velocidad X aleatoria
+                vy: (Math.random() - 0.5) * 0.5, // Velocidad Y aleatoria
+                size: 1 + Math.random() * 4, // Tamaño aleatorio entre 1 y 5
+                color: colors[Math.floor(Math.random() * colors.length)], // Color aleatorio de la lista
+            });
+        }
+
+        let mouse = { x: null, y: null };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, w, h);
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                // Movimiento básico
+                p.x += p.vx;
+                p.y += p.vy;
+                // Reaparición en bordes
+                if (p.x < 0) p.x = w;
+                if (p.x > w) p.x = 0;
+                if (p.y < 0) p.y = h;
+                if (p.y > h) p.y = 0;
+
+                // Efecto sutil de atracción hacia el ratón
+                if (mouse.x && mouse.y) {
+                    let dx = p.x - mouse.x;
+                    let dy = p.y - mouse.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 100) {
+                        p.x += dx * 0.01; // Intensidad reducida
+                        p.y += dy * 0.01; // Intensidad reducida
+                    }
+                }
+
+                // Dibujar partícula
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color; // Usar el color asignado a la partícula
+                ctx.fill();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        
+
+        document.getElementById("mobile-menu").addEventListener("click", function () {
+            const navList = document.querySelector(".nav-list");
+            navList.classList.toggle("active");
+        });
+    </script>
 </body>
+
 </html>

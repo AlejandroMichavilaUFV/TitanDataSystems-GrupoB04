@@ -1,130 +1,258 @@
-/* Heredar estilos base de profile.css */
-@import 'profile.css';
+/* -------------------- */
+/* 🎨 ESTILOS GENERALES */
+/* -------------------- */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    display: flex;
+    height: 100vh;
+}
 
-/* Estilos específicos para el chat */
-.chat-container {
+/* ---------------- */
+/* 📌 ESTRUCTURA */
+/* ---------------- */
+.app-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* 🌙 BARRA LATERAL */
+.sidebar {
+    width: 260px;
+    background: #121212;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 2px solid #333;
+}
+
+/* Logo */
+.brand .logo {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Navegación */
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    color: #ccc;
+    text-decoration: none;
+    padding: 12px;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: #2a2a2a;
+    color: #fff;
+}
+
+/* Historial */
+.chat-history {
+    margin-top: 20px;
+}
+
+.chat-history h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #bbb;
+}
+
+.chat-history ul {
+    list-style: none;
+    padding: 0;
+}
+
+.chat-history li {
+    margin: 5px 0;
+}
+
+.chat-history a {
+    text-decoration: none;
+    color: #888;
+    font-size: 14px;
+}
+
+.chat-history a:hover {
+    color: #fff;
+}
+
+/* Usuario */
+.user-profile {
+    margin-top: auto;
+    text-align: center;
+    padding: 10px;
+}
+
+.user-name {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.logout-btn {
+    color: #f44336;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+/* ---------------- */
+/* 📌 CHAT */
+/* ---------------- */
+.main-content {
+    flex: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: #f5f5f5;
 }
 
-.chat-messages {
+/* 🔹 Cabecera del chat */
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #222;
+    border-bottom: 2px solid #333;
+}
+
+.new-chat-btn {
+    background: #2a2a2a;
+    color: #bbb;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.new-chat-btn:hover {
+    background: #444;
+}
+
+/* 🔹 Contenedor de mensajes */
+.chat-container {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     padding: 20px;
     overflow-y: auto;
 }
 
-.message {
-    max-width: 70%;
-    margin-bottom: 15px;
-    padding: 12px 15px;
-    border-radius: 15px;
-    line-height: 1.4;
+/* 📩 Mensajes */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
 }
 
+/* 💬 Mensaje del usuario */
 .user-message {
-    background: linear-gradient(135deg, #0d47a1, #1565c0);
+    background: #0078d7;
     color: white;
-    margin-left: auto;
-    border-bottom-right-radius: 5px;
+    padding: 10px 15px;
+    border-radius: 12px;
+    max-width: 60%;
+    align-self: flex-end;
+    margin: 5px 0;
 }
 
+/* 🤖 Mensaje del bot */
 .ai-message {
-    background-color: white;
-    color: #333;
-    margin-right: auto;
-    border-bottom-left-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: #2a2a2a;
+    color: #ddd;
+    padding: 10px 15px;
+    border-radius: 12px;
+    max-width: 60%;
+    align-self: flex-start;
+    margin: 5px 0;
 }
 
+/* ⏳ Indicador de carga */
+.loading-message {
+    font-style: italic;
+    color: #aaa;
+}
+
+/* 💨 Animación de puntos */
+.dots::after {
+    content: " ";
+    animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+    0% { content: "."; }
+    33% { content: ".."; }
+    66% { content: "..."; }
+}
+
+/* 🎯 Botones de acciones rápidas */
+.quick-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.quick-btn {
+    background: #444;
+    color: #ddd;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.quick-btn:hover {
+    background: #666;
+}
+
+/* ✍ Entrada de texto */
 .chat-input {
     display: flex;
-    padding: 20px;
-    background-color: white;
-    border-top: 1px solid #e0e0e0;
+    border-top: 2px solid #333;
+    padding: 10px;
+    background: #222;
 }
 
 .chat-input input {
     flex: 1;
-    padding: 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 25px;
-    margin-right: 10px;
-    font-size: 14px;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    background: #333;
+    color: white;
+    border-radius: 8px;
+}
+
+.chat-input input:focus {
     outline: none;
 }
 
 .chat-input button {
-    background: linear-gradient(135deg, #0d47a1, #1565c0);
+    background: #0078d7;
     color: white;
     border: none;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
+    padding: 10px 15px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: transform 0.2s;
+    margin-left: 10px;
+    transition: 0.3s;
 }
 
 .chat-input button:hover {
-    transform: scale(1.05);
+    background: #005bb5;
 }
-
-.chat-input button i {
-    font-size: 18px;
-}
-
-.debug-info {
-    padding: 20px;
-    background: #f5f5f5;
-    border-radius: 8px;
-    margin: 20px;
-    overflow-x: auto;
-}
-
-.debug-info pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 1.4;
-}
-
-/* Estilos para markdown en mensajes AI */
-.ai-message strong {
-    font-weight: bold;
-}
-
-.ai-message em {
-    font-style: italic;
-}
-
-.ai-message code {
-    background-color: rgba(0,0,0,0.1);
-    padding: 2px 4px;
-    border-radius: 3px;
-    font-family: monospace;
-}
-
-.ai-message pre {
-    background-color: rgba(0,0,0,0.1);
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-}
-
-.ai-message ul, .ai-message ol {
-    margin-left: 20px;
-}
-
-.ai-message a {
-    color: #0d47a1;
-    text-decoration: underline;
-}
-
-.ai-message blockquote {
-    border-left: 3px solid #0d47a1;
-    margin: 0;
-    padding-left: 10px;
-    color: #666;
-} 

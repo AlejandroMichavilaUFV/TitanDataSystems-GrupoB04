@@ -23,20 +23,55 @@
                     <i class="fas fa-comments"></i> Chat
                 </a>
             </nav>
+            <div class="chat-history">
+                <h3>Historial</h3>
+                <ul>
+                    <li><a href="#">Conversación 1</a></li>
+                    <li><a href="#">Conversación 2</a></li>
+                    <li><a href="#">Nueva conversación</a></li>
+                </ul>
+            </div>
             <div class="user-profile">
                 <div class="user-info">
                     <span class="user-name">{{ profile.display_name }}</span>
                     <a href="{{ url_for('logout') }}" class="logout-btn">Cerrar sesión</a>
                 </div>
             </div>
+            
         </div>
 
         <!-- Contenido principal -->
         <div class="main-content">
+            <!-- Cabecera del chat -->
+            <div class="chat-header">
+                <h2>Chat con Titán AI</h2>
+                <button class="new-chat-btn"><i class="fas fa-plus"></i> Nuevo Chat</button>
+            </div>
+
+            <!-- Contenedor del chat -->
             <div class="chat-container">
                 <div class="chat-messages" id="chat-messages">
-                    <!-- Los mensajes se añadirán aquí dinámicamente -->
+                    <!-- Mensaje de bienvenida -->
+                    <div class="message ai-message">
+                        <p>👋 ¡Hola! Soy Titán AI. ¿En qué puedo ayudarte hoy?</p>
+                    </div>
+
+                    <!-- Indicador de carga (solo visual) -->
+                    <div class="message ai-message loading-message" id="loading-message">
+                        <p>Escribiendo<span class="dots">...</span></p>
+                    </div>
                 </div>
+
+                <!-- Botones de acciones rápidas -->
+                <div class="quick-actions">
+                    <button class="quick-btn">Genera el estatus general diario</button>
+                    <button class="quick-btn">Detecta riesgos inminentes</button>
+                    <button class="quick-btn">Coméntame sobre proyectos rechazados</button>
+                    <button class="quick-btn">¿Hay proyectos aceptados?</button>
+                    <button class="quick-btn">Dime el estatus del proyecto [x]</button>
+                </div>
+
+                <!-- Entrada de texto -->
                 <div class="chat-input">
                     <input type="text" id="message-input" placeholder="Escribe tu mensaje...">
                     <button id="send-button">
@@ -51,17 +86,18 @@
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const chatMessages = document.getElementById('chat-messages');
+        const loadingMessage = document.getElementById('loading-message');
 
         function addMessage(message, isUser = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
-            
+
             if (isUser) {
                 messageDiv.textContent = message;
             } else {
                 messageDiv.innerHTML = marked.parse(message);
             }
-            
+
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -73,6 +109,9 @@
             addMessage(message, true);
             messageInput.value = '';
 
+            // Muestra el indicador de carga
+            loadingMessage.style.display = 'block';
+
             try {
                 const response = await fetch('/api/chat', {
                     method: 'POST',
@@ -83,6 +122,9 @@
                 });
 
                 const data = await response.json();
+
+                // Oculta el indicador de carga
+                loadingMessage.style.display = 'none';
                 addMessage(data.response);
             } catch (error) {
                 console.error('Error:', error);
@@ -101,6 +143,9 @@
             breaks: true,
             gfm: true
         });
+
+        // Oculta el mensaje de carga al inicio
+        loadingMessage.style.display = 'none';
     </script>
 </body>
 </html>

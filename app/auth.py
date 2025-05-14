@@ -2,25 +2,25 @@ from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from flask import redirect, url_for, session
 from config import Config
 import os
 import base64
 import re
 from functools import wraps
+from flask import redirect, url_for, session
 
+# Configuración del flujo de OAuth
 def get_authorization_url():
-    """Genera la URL de autorización de Google."""
     flow = Flow.from_client_secrets_file(
         'client_secret.json',
         scopes=Config.GOOGLE_SCOPES,
         redirect_uri=Config.GOOGLE_REDIRECT_URI
     )
-    auth_url, _ = flow.authorization_url(prompt='consent')
-    return auth_url
+    authorization_url, _ = flow.authorization_url(prompt='consent')
+    return authorization_url
 
+# Intercambiar el código de autorización por credenciales
 def exchange_code_for_token(code):
-    """Intercambia el código de autorización por credenciales."""
     flow = Flow.from_client_secrets_file(
         'client_secret.json',
         scopes=Config.GOOGLE_SCOPES,
@@ -29,19 +29,24 @@ def exchange_code_for_token(code):
     flow.fetch_token(code=code)
     return flow.credentials
 
-def get_user_profile(credentials):
-    service = build('oauth2', 'v2', credentials=credentials)
-    profile = service.userinfo().get().execute()
+# Obtener el perfil del usuario
+def get_user_profile(creds):
+    service = build('people', 'v1', credentials=creds)
+    profile = service.people().get(
+        resourceName='people/me',
+        personFields='names,emailAddresses,photos'
+    ).execute()
     return profile
 
 def clean_email_content(content):
-    """Limpia el contenido del correo eliminando texto no deseado."""
+    # Ajusta el patrón para eliminar encabezados y pie de página no deseados
+    # Puedes modificar el patrón según el formato específico de tus correos
     pattern = r"(?s)^.*?Extracto de actividad de la cuenta.*?Adjuntamos tu extracto de actividad de la cuenta, que incluye:.*?glosario|Trading 212 es un nombre comercial.*?Todos los Derechos Reservados"
     cleaned_content = re.sub(pattern, '', content)
     return cleaned_content.strip()
 
+# Obtener los últimos 3 correos
 def get_last_emails(creds):
-    """Obtiene los últimos 3 correos del usuario autenticado."""
     service = build('gmail', 'v1', credentials=creds)
     results = service.users().messages().list(userId='me', maxResults=3).execute()
     messages = results.get('messages', [])
@@ -89,7 +94,6 @@ def get_last_emails(creds):
     return emails
 
 def login_required(f):
-    """Decorador para proteger rutas que requieren autenticación."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'credentials' not in session:

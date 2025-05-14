@@ -1,68 +1,440 @@
+/* Paleta de colores */
+:root {
+    --color-fondo: #1b2530; /* Azul grisáceo oscuro más profundo */
+    --color-primario: #1a1a1a; /* Negro grisáceo */
+    --color-secundario: #1565C0; /* Azul vibrante */
+    --color-acento: #00e5ff; /* Cian eléctrico */
+    --color-texto: #cfd8dc; /* Gris azulado para menor fatiga visual */
+}
+
+
+/* Tipografía */
 body {
+    font-family: 'Arial', sans-serif;
+    color: var(--color-texto);
+    background-color: var(--color-fondo);
     margin: 0;
-    font-family: 'Roboto', sans-serif;
-    color: #ffffff;
-    overflow: hidden;
+    padding: 0;
+    overflow-x: hidden;
 }
 
-.hero {
-    position: relative;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    overflow: hidden;
+/* Lienzo de fondo animado */
+#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
-.background-video {
-    position: absolute;
+/* Estilos para la pantalla de carga */
+#loading-screen {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    z-index: -1;
-    filter: brightness(50%);
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 1s ease;
 }
 
-.content {
-    z-index: 1;
-    text-align: center;
+#loading-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
-.logo {
-    width: 150px;
-    margin-bottom: 20px;
-    animation: fadeIn 2s ease-in-out;
-}
-
-.slogan {
-    font-family: 'Orbitron', sans-serif;
+#loading-screen p {
     font-size: 24px;
-    color: #e0e0e0;
-    margin-bottom: 40px;
-    animation: fadeIn 3s ease-in-out;
+    color: #000000;
+    cursor: pointer;
 }
 
-.cta-btn {
-    background-color: #0d47a1;
-    color: #ffffff;
+/* Estilos para la animación de aparición de contenido */
+.content {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 1s ease, transform 1s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.content.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Contenedor principal */
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 70px;
+}
+
+/* Sección de texto */
+.text-section {
+    flex: 1;
+    max-width: 50%;
+}
+
+.text-section h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.text-section h1::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, transparent, var(--color-acento));
+    transition: width 0.5s;
+}
+
+
+
+.text-section p {
+    font-size: 1.2em;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+/* Botón de inicio de sesión */
+.login-button {
+    display: inline-block;
+    background-color: var(--color-secundario);
+    color: var(--color-texto);
     padding: 15px 30px;
-    text-decoration: none;
     border-radius: 30px;
-    font-weight: bold;
+    text-decoration: none;
+    font-size: 1.2em;
     transition: background-color 0.3s, transform 0.3s;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 4s ease-in-out;
 }
 
-.cta-btn:hover {
-    background-color: #1565c0;
+.login-button:hover {
+    background-color: var(--color-acento);
     transform: scale(1.05);
+    box-shadow: 0 0 10px var(--color-acento), 0 0 20px var(--color-acento);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+/* Sección del modelo 3D */
+.model-section {
+    flex: 1;
+    max-width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+spline-viewer {
+    width: 100%;
+    height: 500px;
+}
+
+/* Animación de gradiente de fondo en el h1 */
+@keyframes gradiente-electrico {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 200% 0%;
+    }
+}
+
+.text-section h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    background-size: 200% 200%;
+    background: linear-gradient(45deg, 
+    #00a6ff 0%,  
+    #025059 20%,  
+    #0099ff 40%,  
+    #7b1fa2 60%,  
+    #6200ea 75%,  
+    #e600bc 90%,  
+    #00455a 100%
+);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradiente-electrico 60s linear infinite;
+}
+
+.text-section h1:hover {
+    animation: gradiente-electrico 1s linear infinite;
+}
+
+/* Nueva Sección de Plataforma */
+.platform-section {
+    text-align: center;
+    padding: 80px 50px;
+    background-color: var(--color-fondo);
+    box-shadow: 0 -10px 400px rgba(0, 229, 255, 0.3);
+}
+
+.platform-section h2 {
+    font-size: 2.5em;
+    background: linear-gradient(45deg, 
+    #00a6ff 0%,  
+    #00e5ff 20%,  
+    #0099ff 40%,  
+    #7b1fa2 60%,  
+    #6200ea 75%,  
+    #e600bc 90%,  
+    #00c3ff 100%
+);
+
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradiente-electrico 8s linear infinite;
+    margin-bottom: 20px;
+}
+
+.sub-text {
+    font-size: 1.3em;
+    color: var(--color-acento);
+    margin-bottom: 40px;
+}
+
+/* Contenedor de características */
+.feature-container {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+
+    gap: 30px;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Tarjetas de características */
+.feature-card {
+    background: rgba(26, 26, 26, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 5px var(--color-acento);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 30px var(--color-acento,0.6);
+}
+
+/* Íconos */
+.feature-card i {
+    font-size: 40px;
+    color: var(--color-acento);
+    margin-bottom: 15px;
+}
+
+/* Tarjeta especial de IA */
+.special-card {
+    background: linear-gradient(180deg, rgba(0, 229, 255, 0.1), rgba(0, 229, 255, 0.3));
+    border: 2px solid var(--color-acento);
+}
+
+/* Simulación de Chat */
+.chat-preview {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 15px;
+    font-size: 0.9em;
+    text-align: left;
+}
+
+.chat-preview p {
+    margin: 5px 0;
+    color: var(--color-texto);
+}
+
+@media (max-width: 1024px) {
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 40px;
+        text-align: center;
+    }
+
+    .text-section {
+        max-width: 90%;
+    }
+
+    .model-section {
+        max-width: 100%;
+        margin-top: 30px;
+    }
+
+    spline-viewer {
+        height: 350px;
+    }
+
+    .feature-container {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    nav {
+        width: 100%;
+        text-align: center;
+        border-radius: 0;
+        /* Quita el border-radius en sticky */
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .main-container {
+        padding: 20px;
+    }
+
+    .text-section h1 {
+        font-size: 2em;
+    }
+
+    .text-section p {
+        font-size: 1em;
+    }
+
+    .feature-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .text-section h1 {
+        font-size: 1.8em;
+    }
+
+    .text-section p {
+        font-size: 0.9em;
+    }
+
+    .login-button {
+        font-size: 1em;
+        padding: 12px 20px;
+    }
+
+    spline-viewer {
+        height: 250px;
+    }
+}
+
+/* Estilos del navbar */
+.navbar {
+    position: sticky;
+    top: 10px;
+    z-index: 1;
+    background-color: rgba(26, 26, 26, 0.5);
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 0 150px var(--color-acento);
+    width: fit-content;
+    transition: all 0.3s ease;
+    margin: 0 auto;
+    /* Centrar el navbar */
+}
+
+/* Estilos para el menú de hamburguesa */
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--color-texto);
+}
+
+/* Estilos para la lista de navegación */
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-list li a {
+    text-decoration: none;
+    color: var(--color-texto);
+    padding: 5px 10px;
+    transition: color 0.3s, text-shadow 0.3s;
+    position: relative;
+}
+
+.nav-list li a::before {
+    content: '';
+    position: absolute;
+    background: linear-gradient(45deg, transparent, var(--color-acento), transparent);
+    background-size: 400% 400%;
+    z-index: -2;
+    opacity: 0;
+    transition: opacity 0.3s, background-position 0.5s;
+}
+
+.nav-list li a:hover::before {
+    opacity: 1;
+    background-position: 100% 0;
+}
+
+.nav-list li a:hover {
+    color: var(--color-acento);
+    text-shadow: 0 0 5px var(--color-acento), 0 0 10px var(--color-acento);
+}
+
+/* Estilos para dispositivos móviles */
+@media screen and (max-width: 768px) {
+    .navbar {
+        margin-top:0px;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+    
+    .nav-list {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background-color: rgba(26, 26, 26, 0.9);
+        text-align: center;
+        padding: 10px 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        border-radius: 0 0 15px 15px;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .nav-list.active {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .nav-list li {
+        margin: 10px 0;
+    }
 }

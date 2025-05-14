@@ -13,7 +13,6 @@ import os
 import json
 from app.gmail_utils import get_last_emails
 from app.rag_utils import EmailRAG
-from app.models.usuarios import registrar_usuario_google
 
 # Variables globales para el modelo y el índice
 model_emb = None
@@ -36,9 +35,6 @@ def initialize_ai(credentials):
     # Obtener todos los correos
     results = service.users().messages().list(userId='me').execute()
     messages = results.get('messages', [])
-    
-    # Agregar registro de depuración
-    print(f"Correos obtenidos: {len(messages)}")
     
     emails_data = []  # Reiniciar la lista de correos
     
@@ -81,9 +77,6 @@ def initialize_ai(credentials):
     index = faiss.IndexFlatL2(dimension)
     index.add(embeddings)
 
-    # Agregar registro de depuración
-    print(f"Inicialización completada. Correos procesados: {len(emails_data)}")
-
 def buscar_correos(pregunta, k=5):
     pregunta_embedding = model_emb.encode([pregunta])
     distancias, indices = index.search(pregunta_embedding, k)
@@ -112,55 +105,20 @@ def generar_respuesta(pregunta, correos_relevantes):
 
 @app.route('/')
 def index():
-    """Página de inicio."""
+    if 'credentials' in session:
+        return redirect(url_for('profile'))
     return render_template('index.html')
 
 @app.route('/login')
 def login():
-    """Redirige al usuario a Google para autenticarse."""
-    return redirect(get_authorization_url())
+    authorization_url = get_authorization_url()
+    return redirect(authorization_url)
 
 @app.route('/auth/callback')
 def callback():
-    """Recibe el código de autorización y obtiene las credenciales."""
     code = request.args.get('code')
     creds = exchange_code_for_token(code)
-    session['credentials'] = creds_to_dict(creds)
-    return redirect(url_for('profile'))
-
-@app.route('/profile')
-def profile():
-    """Muestra el perfil del usuario autenticado y lo registra/actualiza."""
-    if 'credentials' not in session:
-        return redirect(url_for('index'))
-
-    creds = Credentials(**session['credentials'])
-    profile = get_user_profile(creds)
-    
-    # Verificar que el perfil contenga las claves necesarias
-    if 'email' not in profile or 'picture' not in profile:
-        return jsonify({'error': 'No se pudo obtener el correo electrónico o la foto del perfil'}), 400
-    
-    # Registrar o actualizar el usuario en usuarios.json
-    registrar_usuario_google(profile)
-    
-    # Inicializar el modelo AI con las credenciales
-    initialize_ai(creds)
-    
-    # Agregar registro de depuración
-    print(f"Perfil del usuario: {profile}")
-    
-    return render_template('profile.html', profile=profile, emails=emails_data)
-
-@app.route('/logout')
-def logout():
-    """Cierra la sesión del usuario."""
-    session.pop('credentials', None)
-    return redirect(url_for('index'))
-
-def creds_to_dict(creds):
-    """Convierte credenciales a diccionario para almacenarlas en sesión."""
-    return {
+    session['credentials'] = {
         'token': creds.token,
         'refresh_token': creds.refresh_token,
         'token_uri': creds.token_uri,
@@ -168,6 +126,36 @@ def creds_to_dict(creds):
         'client_secret': creds.client_secret,
         'scopes': creds.scopes
     }
+    return redirect(url_for('profile'))
+
+@app.route('/profile')
+def profile():
+    if 'credentials' not in session:
+        return redirect(url_for('index'))
+    
+    try:
+        creds = Credentials(
+            token=session['credentials']['token'],
+            refresh_token=session['credentials']['refresh_token'],
+            token_uri=session['credentials']['token_uri'],
+            client_id=session['credentials']['client_id'],
+            client_secret=session['credentials']['client_secret'],
+            scopes=session['credentials']['scopes']
+        )
+        
+        profile = get_user_profile(creds)
+        emails = get_last_emails(creds)
+        
+        return render_template('profile.html', profile=profile, emails=emails)
+    except Exception as e:
+        print(f"Error: {e}")
+        session.pop('credentials', None)
+        return redirect(url_for('index'))
+
+@app.route('/logout')
+def logout():
+    session.pop('credentials', None)
+    return redirect(url_for('index'))
 
 @app.route('/download_attachment/<message_id>/<attachment_id>')
 def download_attachment(message_id, attachment_id):
@@ -291,37 +279,6 @@ def get_email(email_id):
         return jsonify(email_data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-def process_email(message, service):
-    email_data = {
-        'id': message['id'],
-        'threadId': message['threadId'],
-        'labelIds': message['labelIds'],
-        'snippet': message['snippet'],
-        'historyId': message['historyId'],
-        'internalDate': message['internalDate'],
-        'payload': message['payload'],
-        'sizeEstimate': message['sizeEstimate'],
-        'raw': message['raw'] if 'raw' in message else None,
-        'attachments': []
-    }
-
-    if 'parts' in message['payload']:
-        for part in message['payload']['parts']:
-            if part['filename']:
-                attachment_id = part['body']['attachmentId']
-                attachment = service.users().messages().attachments().get(
-                    userId='me',
-                    messageId=message['id'],
-                    id=attachment_id
-                ).execute()
-                email_data['attachments'].append({
-                    'filename': part['filename'],
-                    'mimeType': part['mimeType'],
-                    'data': attachment['data']
-                })
-
-    return email_data
 
 @app.route('/api/attachment/<attachment_id>')
 @login_required
