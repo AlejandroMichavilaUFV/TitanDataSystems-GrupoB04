@@ -3,7 +3,7 @@ from google_auth_oauthlib.flow import Flow
 import os
 
 app = Flask(__name__)
-app.secret_key = 'tu_clave_secreta'
+app.secret_key = 'r3g27fge27fy23'
 
 # Configuración de OAuth2
 CLIENT_SECRETS_FILE = "client_secret.json"
